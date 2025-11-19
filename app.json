@@ -1,54 +1,57 @@
 {
-    "expo": {
-        "name": "DigiMemCounter",
-        "slug": "DigiMemCounter",
-        "version": "1.0.0",
-        "orientation": "landscape",
-        "icon": "./assets/adaptive-icon.png",
-        "userInterfaceStyle": "light",
-        "androidStatusBar": {
-            "hidden": true
-        },
-        "splash": {
-            "image": "./assets/splash.png",
-            "resizeMode": "contain",
-            "backgroundColor": "#ffffff"
-        },
-        "plugins": [
-            [
-                "expo-screen-orientation",
-                {
-                    "orientation": "landscape"
-                }
-            ],
-            [
-                "expo-navigation-bar",
-                {
-                    "position": "relative",
-                    "visibility": "hidden",
-                    "behavior": "inset-swipe"
-                }
-            ]
-        ],
-        "assetBundlePatterns": ["**/*"],
-        "ios": {
-            "supportsTablet": true,
-            "bundleIdentifier": "com.RadianxSoft.DigiMemCounter"
-        },
-        "android": {
-            "adaptiveIcon": {
-                "foregroundImage": "./assets/adaptive-icon.png",
-                "backgroundColor": "#ffffff"
-            },
-            "package": "com.RadianxSoft.DigiMemCounter"
-        },
-        "web": {
-            "favicon": "./assets/favicon.png"
-        },
-        "extra": {
-            "eas": {
-                "projectId": "7cae8bbe-1f06-4a18-aa35-bd9c55c05ac3"
-            }
+  "expo": {
+    "name": "DigiMemCounter",
+    "slug": "DigiMemCounter",
+    "version": "1.0.0",
+    "orientation": "landscape",
+    "icon": "./assets/adaptive-icon.png",
+    "userInterfaceStyle": "light",
+    "androidStatusBar": {
+      "hidden": true
+    },
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "plugins": [
+      [
+        "expo-screen-orientation",
+        {
+          "orientation": "landscape"
         }
+      ],
+      [
+        "expo-navigation-bar",
+        {
+          "position": "relative",
+          "visibility": "hidden",
+          "behavior": "inset-swipe"
+        }
+      ],
+      "expo-audio"
+    ],
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.RadianxSoft.DigiMemCounter"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#ffffff"
+      },
+      "package": "com.RadianxSoft.DigiMemCounter"
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "7cae8bbe-1f06-4a18-aa35-bd9c55c05ac3"
+      }
     }
+  }
 }

@@ -1,27 +1,22 @@
 /* eslint-disable react/prop-types */
 import PropTypes from "prop-types";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, useMemo } from "react";
 import { ImageBackground, View } from "react-native";
 import { Asset } from "expo-asset";
 import * as Haptics from "expo-haptics";
 import { useFonts } from "expo-font";
-import { Audio } from "expo-av";
+import { createAudioPlayer } from "expo-audio";
 import * as NavigationBar from "expo-navigation-bar";
 import { setStatusBarHidden } from "expo-status-bar";
 import * as SplashScreen from "expo-splash-screen";
-import { SafeAreaView } from "react-native-safe-area-context";
 import { styles } from "./styles";
 import { MEMORY_VALUES, TIMER, DICE } from "../../constants";
 import { PlayerRow, MemoryGrid, Timer, CenterButton } from "./components";
 
-NavigationBar.setPositionAsync("relative");
-NavigationBar.setVisibilityAsync("hidden");
-NavigationBar.setBehaviorAsync("inset-swipe");
-setStatusBarHidden(true, "none");
-
-const diceAudio = new Audio.Sound();
-const tapAudio = new Audio.Sound();
-const startEndAudio = new Audio.Sound();
+// Audio instances will be created in the component
+let diceAudio = null;
+let tapAudio = null;
+let startEndAudio = null;
 
 /**
  * Main game screen component for the Digimon Card Game memory counter
@@ -80,36 +75,88 @@ const Main = (props) => {
     const firstRow = MEMORY_VALUES.FIRST_ROW;
     const secondRow = MEMORY_VALUES.SECOND_ROW;
 
-    const image = {
-        uri: Asset.fromModule(require("../../assets/images/justBackground.png")).uri,
-    };
+    // Memoize image objects to prevent recreation on every render
+    const image = useMemo(() => require("../../../assets/defaultBackground.jpg"), []);
 
-    const imageForeground = {
-        uri: Asset.fromModule(require("../../assets/images/justForeground.png")).uri,
-    };
+    const imageForeground = useMemo(
+        () => require("../../assets/images/justForeground.png"),
+        []
+    );
+
+    // Initialize NavigationBar and StatusBar once on mount
+    useEffect(() => {
+        const initializeUI = async () => {
+            try {
+                // Note: These calls may not work with edge-to-edge enabled
+                // Commenting them out to avoid warnings
+                // await NavigationBar.setPositionAsync("relative");
+                // await NavigationBar.setVisibilityAsync("hidden");
+                // await NavigationBar.setBehaviorAsync("inset-swipe");
+                setStatusBarHidden(true, "none");
+            } catch (error) {
+                console.warn("Error initializing UI:", error);
+            }
+        };
+
+        initializeUI();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []); // Only run once on mount
+
+    // Initialize audio instances
+    useEffect(() => {
+        const initializeAudio = async () => {
+            try {
+                diceAudio = createAudioPlayer(require("../../assets/sounds/dice.mp3"));
+                tapAudio = createAudioPlayer(require("../../assets/sounds/tap4.mp3"));
+                startEndAudio = createAudioPlayer(require("../../assets/sounds/startEnd1.mp3"));
+            } catch (error) {
+                console.warn("Error loading audio:", error);
+            }
+        };
+
+        initializeAudio();
+
+        // Cleanup audio on unmount
+        return () => {
+            // AudioPlayer doesn't seem to have an explicit unload/destroy method in the types shown
+            // but typically we might want to stop playback
+            if (diceAudio) diceAudio.pause();
+            if (tapAudio) tapAudio.pause();
+            if (startEndAudio) startEndAudio.pause();
+        };
+    }, []);
 
     async function playDiceSound() {
-        const status = await diceAudio.getStatusAsync();
-        if (!status.isLoaded) {
-            await diceAudio.loadAsync(require("../../assets/sounds/dice.mp3"));
+        if (diceAudio) {
+            try {
+                await diceAudio.seekTo(0);
+                diceAudio.play();
+            } catch (error) {
+                console.warn("Error playing dice sound:", error);
+            }
         }
-        diceAudio.replayAsync();
     }
 
     async function playTapSound() {
-        const status = await tapAudio.getStatusAsync();
-        if (!status.isLoaded) {
-            await tapAudio.loadAsync(require("../../assets/sounds/tap4.mp3"));
+        if (tapAudio) {
+            try {
+                await tapAudio.seekTo(0);
+                tapAudio.play();
+            } catch (error) {
+                console.warn("Error playing tap sound:", error);
+            }
         }
-        tapAudio.replayAsync();
     }
 
     async function playStartEndSound() {
-        const status = await startEndAudio.getStatusAsync();
-        if (!status.isLoaded) {
-            await startEndAudio.loadAsync(require("../../assets/sounds/startEnd1.mp3"));
+        if (startEndAudio) {
+            try {
+                await startEndAudio.seekTo(0);
+                startEndAudio.play();
+            } catch (error) {
+                console.warn("Error playing start/end sound:", error);
+            }
         }
-        startEndAudio.replayAsync();
     }
 
     const onSettingsClick = () => {
@@ -119,13 +166,24 @@ const Main = (props) => {
     };
 
     useEffect(() => {
-        if (image.uri && !settings.backgroundImage?.uri) {
-            updateBackgroundImage(image.uri);
+        // Check if settings.backgroundImage is null/undefined or doesn't have a URI (if it's an object)
+        // When using require(), it returns a number. When using ImagePicker, it returns an object with uri.
+        const isBackgroundSet =
+            settings.backgroundImage &&
+            (typeof settings.backgroundImage === "number" || settings.backgroundImage.uri);
+
+        if (!isBackgroundSet) {
+            updateBackgroundImage(image);
         }
-        if (imageForeground.uri && !settings.foregroundImage?.uri && settings.keepHUD) {
-            updateForegroundImage(imageForeground.uri);
+
+        const isForegroundSet =
+            settings.foregroundImage &&
+            (typeof settings.foregroundImage === "number" || settings.foregroundImage.uri);
+
+        if (!isForegroundSet && settings.keepHUD) {
+            updateForegroundImage(imageForeground);
         }
-    }, [image, imageForeground]);
+    }, [image, imageForeground, settings.backgroundImage, settings.foregroundImage, settings.keepHUD]);
 
     useEffect(() => {
         if (indexPressed == -1) {
@@ -133,7 +191,16 @@ const Main = (props) => {
             setPlayerTwoMemory(0);
             return;
         }
-        const properMemory = indexPressed + 1;
+
+        // For Player 2, the grid rows are swapped (firstRow=6-10, secondRow=1-5)
+        // So we need to invert the index: 0-4 becomes 5-9, and 5-9 becomes 0-4
+        let actualIndex = indexPressed;
+        if (!isPlayerOne) {
+            // Swap the rows: if index is 0-4, make it 5-9, and vice versa
+            actualIndex = indexPressed < 5 ? indexPressed + 5 : indexPressed - 5;
+        }
+
+        const properMemory = actualIndex + 1;
         if (isPlayerOne) {
             setPlayerOneMemory(properMemory);
             setPlayerTwoMemory(properMemory * -1);
@@ -141,7 +208,7 @@ const Main = (props) => {
             setPlayerTwoMemory(properMemory);
             setPlayerOneMemory(properMemory * -1);
         }
-    }, [indexPressed]);
+    }, [indexPressed, isPlayerOne]);
 
     const handlePress = (index, isPlayerOne) => {
         if (settings.isSoundOn) playTapSound();
@@ -247,9 +314,9 @@ const Main = (props) => {
             <ImageBackground
                 style={styles.image}
                 source={settings.keepHUD ? settings.foregroundImage : null}>
-                <SafeAreaView>
+                <View style={{ flex: 1}}>
                     {/* Main Game Area */}
-                    <View style={styles.landscape}>
+                    <View style={{ ...styles.landscape }}>
                         {/* Player 2 Row (rotated) */}
                         <PlayerRow
                             playerName={settings.player2Name}
@@ -275,6 +342,7 @@ const Main = (props) => {
                                 secondRow={secondRow}
                                 indexPressed={indexPressed}
                                 isPlayerOne={true}
+                                selectedByPlayerOne={isPlayerOne}
                                 playerColor={settings.player1Color}
                                 selectedColor={settings.selectedColor}
                                 onPress={handlePress}
@@ -345,6 +413,7 @@ const Main = (props) => {
                                 secondRow={firstRow}
                                 indexPressed={indexPressed}
                                 isPlayerOne={false}
+                                selectedByPlayerOne={isPlayerOne}
                                 playerColor={settings.player2Color}
                                 selectedColor={settings.selectedColor}
                                 onPress={handlePress}
@@ -372,7 +441,7 @@ const Main = (props) => {
                             onSettingsClick={onSettingsClick}
                         />
                     </View>
-                </SafeAreaView>
+                </View>
             </ImageBackground>
         </ImageBackground>
     );

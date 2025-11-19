@@ -6,6 +6,11 @@ export const styles = StyleSheet.create({
     },
     landscape: {
         flexDirection: "column",
+        flex: 1,
+    },
+    image: {
+        flex: 1,
+        width: "100%",
         height: "100%",
     },
     playerRow: {
@@ -20,6 +25,7 @@ export const styles = StyleSheet.create({
         width: "100%",
         height: "60%",
         backgroundColor: "rgba(0, 0, 0, 0.2)",
+        padding: 25,
     },
     row: {
         width: "100%",

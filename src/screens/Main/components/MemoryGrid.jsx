@@ -11,6 +11,7 @@ import { styles } from "./styles";
  * @param {Array<number>} props.secondRow - Second row of numbers
  * @param {number} props.indexPressed - Currently selected index
  * @param {boolean} props.isPlayerOne - Whether this is player one's grid
+ * @param {boolean} props.selectedByPlayerOne - Whether player one made the current selection
  * @param {string} props.playerColor - Player's color theme
  * @param {string} props.selectedColor - Color for selected cell
  * @param {Function} props.onPress - Handler for cell press
@@ -21,6 +22,7 @@ const MemoryGrid = ({
     secondRow,
     indexPressed,
     isPlayerOne,
+    selectedByPlayerOne,
     playerColor,
     selectedColor,
     onPress,
@@ -34,8 +36,10 @@ const MemoryGrid = ({
                         key={number}
                         style={{
                             ...styles.cell,
+                            borderRadius: 50,
+                            overflow: 'hidden',
                             backgroundColor:
-                                indexPressed === index && isPlayerOne
+                                indexPressed === index && isPlayerOne === selectedByPlayerOne
                                     ? selectedColor
                                     : undefined,
                         }}
@@ -43,7 +47,7 @@ const MemoryGrid = ({
                         <GradientBorderView
                             gradientProps={{
                                 colors:
-                                    indexPressed === index && isPlayerOne
+                                    indexPressed === index && isPlayerOne === selectedByPlayerOne
                                         ? [selectedColor, selectedColor]
                                         : [playerColor, playerColor],
                             }}
@@ -72,8 +76,10 @@ const MemoryGrid = ({
                         key={number}
                         style={{
                             ...styles.cell,
+                            borderRadius: 50,
+                            overflow: 'hidden',
                             backgroundColor:
-                                indexPressed === index + 5 && isPlayerOne
+                                indexPressed === index + 5 && isPlayerOne === selectedByPlayerOne
                                     ? selectedColor
                                     : undefined,
                         }}
@@ -81,7 +87,7 @@ const MemoryGrid = ({
                         <GradientBorderView
                             gradientProps={{
                                 colors:
-                                    indexPressed === index + 5 && isPlayerOne
+                                    indexPressed === index + 5 && isPlayerOne === selectedByPlayerOne
                                         ? [selectedColor, selectedColor]
                                         : [playerColor, playerColor],
                             }}
@@ -113,6 +119,7 @@ MemoryGrid.propTypes = {
     secondRow: PropTypes.arrayOf(PropTypes.number).isRequired,
     indexPressed: PropTypes.number.isRequired,
     isPlayerOne: PropTypes.bool.isRequired,
+    selectedByPlayerOne: PropTypes.bool.isRequired,
     playerColor: PropTypes.string.isRequired,
     selectedColor: PropTypes.string.isRequired,
     onPress: PropTypes.func.isRequired,

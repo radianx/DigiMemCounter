@@ -51,7 +51,6 @@ const PlayerRow = ({
                     flexDirection: "row",
                     justifyContent: "space-between",
                     width: "40%",
-                    padding: 20,
                 }}>
                 <Text style={styles.textBold}>
                     {playerName}
@@ -68,8 +67,7 @@ const PlayerRow = ({
                 }}>
                 <Text
                     style={
-                        (isPlayerOne && (indexPressed === -1 || !isPlayerOne)) ||
-                        (!isPlayerOne && (indexPressed === -1 || isPlayerOne))
+                        memory >= 0
                             ? styles.textBold
                             : styles.text
                     }>

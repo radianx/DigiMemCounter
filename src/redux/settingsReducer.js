@@ -17,7 +17,7 @@ const initialState = {
     player1Name: "PLAYER 1",
     player2Name: "PLAYER 2",
     player1Color: "#3C91E6",
-    player2Color: "#C33C54",
+    player2Color: "#C33CAD",
     selectedColor: "#F4D35E",
     backgroundImage: null,
     foregroundImage: null,

@@ -5,7 +5,9 @@ export const styles = StyleSheet.create({
         flexDirection: "row",
         justifyContent: "space-between",
         alignItems: "center",
-        padding: 10,
+        height: "20%",
+        paddingLeft: 20,
+        paddingRight: 20,
     },
     textBold: {
         fontSize: 24,
@@ -24,11 +26,10 @@ export const styles = StyleSheet.create({
     },
     row: {
         flexDirection: "row",
-        gap: 10,
+        marginTop: 10,
     },
     reverseRow: {
         flexDirection: "row-reverse",
-        gap: 10,
     },
     cell: {
         width: 80,
