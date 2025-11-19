@@ -2,6 +2,8 @@
 
 A memory counter app designed for the **Digimon Card Game** (TCG), built with React Native and Expo. Track memory values, manage turns, roll dice, and customize your gaming experience with a sleek landscape interface.
 
+You can download the APK directly on [releases page](https://github.com/radianx/DigiMemCounter/releases)
+
 (Yes, this readme and also the CONTRIBUTING.md file are AI generated based on the content of this repository)
 
 ![Version](https://img.shields.io/badge/version-1.0.0-blue)
