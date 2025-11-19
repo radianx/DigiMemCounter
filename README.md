@@ -170,10 +170,6 @@ This has the WTFPL license.
 
 This is a personal project. Feel free to fork and customize for your own use!
 
-## 📧 Contact
-
-Created by Adrian Sbardella
-
 ---
 
 **Enjoy tracking your Digimon Card Game matches! 🎴**

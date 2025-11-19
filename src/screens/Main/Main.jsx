@@ -1,5 +1,5 @@
 /* eslint-disable react/prop-types */
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { ImageBackground, Pressable, Text, View } from "react-native";
 import { Asset } from "expo-asset";
 import * as Haptics from "expo-haptics";
@@ -155,10 +155,33 @@ const Main = (props) => {
         NotoSansMono: require("../../assets/fonts/NotoSansMono-Bold.ttf"),
     });
 
-    const onLayoutRootView = useCallback(async () => {
-        if (fontsLoaded || fontError) {
-            await SplashScreen.hideAsync();
+    useEffect(() => {
+        async function hideSplash() {
+            try {
+                if (fontsLoaded || fontError) {
+                    if (fontError) {
+                        console.error("Font loading error:", fontError);
+                    }
+                    await SplashScreen.hideAsync();
+                }
+            } catch (error) {
+                console.error("Error hiding splash screen:", error);
+            }
         }
+
+        // Hide splash screen when fonts are ready
+        hideSplash();
+
+        // Fallback: hide splash screen after 3 seconds regardless
+        const timeout = setTimeout(async () => {
+            try {
+                await SplashScreen.hideAsync();
+            } catch (error) {
+                console.error("Error hiding splash screen (timeout):", error);
+            }
+        }, 3000);
+
+        return () => clearTimeout(timeout);
     }, [fontsLoaded, fontError]);
 
     const resetGameState = (silent) => {
@@ -224,7 +247,7 @@ const Main = (props) => {
                 style={styles.image}
                 source={settings.keepHUD ? settings.foregroundImage : null}>
                 <SafeAreaView>
-                    <View style={styles.landscape} onLayout={onLayoutRootView}>
+                    <View style={styles.landscape}>
                         <View style={{ ...styles.playerRow, transform: [{ rotate: "180deg" }] }}>
                             <View
                                 style={{
