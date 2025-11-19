@@ -2,6 +2,8 @@
 
 A memory counter app designed for the **Digimon Card Game** (TCG), built with React Native and Expo. Track memory values, manage turns, roll dice, and customize your gaming experience with a sleek landscape interface.
 
+(Yes, this readme and also the CONTRIBUTING.md file are AI generated based on the content of this repository)
+
 ![Version](https://img.shields.io/badge/version-1.0.0-blue)
 ![Expo SDK](https://img.shields.io/badge/Expo-SDK%2054-000020?logo=expo)
 ![React Native](https://img.shields.io/badge/React%20Native-0.81.5-61DAFB?logo=react)
@@ -12,19 +14,19 @@ A memory counter app designed for the **Digimon Card Game** (TCG), built with Re
 ### Core Gameplay
 - **Memory Counter**: Track memory values from 0-10 for both players with an intuitive grid interface
 - **Dual Player Support**: Simultaneous memory tracking for two players in landscape mode
-- **Turn Management**: 
+- **Turn Management**:
   - Track current turn and turn counter
   - "Start Turn" and "End Turn" buttons for organized gameplay
   - Visual indicators showing whose turn it is
 - **Dice Rolling**: Built-in D20 dice roller to determine who goes first
-- **Game Timer**: 
+- **Game Timer**:
   - Stopwatch mode to track total game duration
   - 5-minute countdown timer (long-press to activate)
   - Visual timer display that highlights the current player's color
 
 ### Customization
 - **Player Names**: Customize both player names
-- **Color Themes**: 
+- **Color Themes**:
   - Individual color customization for Player 1 and Player 2
   - Custom selection highlight color
   - Color picker with wheel interface
@@ -33,7 +35,7 @@ A memory counter app designed for the **Digimon Card Game** (TCG), built with Re
 
 ### User Experience
 - **Haptic Feedback**: Tactile vibration feedback for button presses and actions (toggle on/off)
-- **Sound Effects**: 
+- **Sound Effects**:
   - Dice rolling sound
   - Button tap sounds
   - Game start/end sounds
@@ -174,6 +176,7 @@ Contributions are welcome! Please read [CONTRIBUTING.md](CONTRIBUTING.md) for de
 
 For major changes, please open an issue first to discuss what you would like to change.
 
+Shoutout to [Kevin Kandlbinder](https://unsplash.com/photos/a-purple-and-blue-abstract-background-with-lines-WrjxzLskZK0?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText) whom I stole the default background from.
 ---
 
 **Enjoy tracking your Digimon Card Game matches! 🎴**
