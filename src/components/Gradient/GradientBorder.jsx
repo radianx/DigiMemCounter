@@ -1,3 +1,4 @@
+import PropTypes from "prop-types";
 import React from "react";
 import { StyleSheet, View } from "react-native";
 import MaskedView from "@react-native-masked-view/masked-view";
@@ -64,3 +65,17 @@ export default function GradientBorder({
         </MaskedView>
     );
 }
+
+GradientBorder.propTypes = {
+    gradientProps: PropTypes.object,
+    borderWidth: PropTypes.number,
+    borderRadius: PropTypes.number,
+    borderTopRightRadius: PropTypes.number,
+    borderTopLeftRadius: PropTypes.number,
+    borderBottomLeftRadius: PropTypes.number,
+    borderBottomRightRadius: PropTypes.number,
+    borderTopWidth: PropTypes.number,
+    borderLeftWidth: PropTypes.number,
+    borderRightWidth: PropTypes.number,
+    borderBottomWidth: PropTypes.number,
+};

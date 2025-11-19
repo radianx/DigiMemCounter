@@ -1,6 +1,7 @@
 /* eslint-disable react/prop-types */
+import PropTypes from "prop-types";
 import React, { useEffect, useRef, useState } from "react";
-import { ImageBackground, Pressable, Text, View } from "react-native";
+import { ImageBackground, View } from "react-native";
 import { Asset } from "expo-asset";
 import * as Haptics from "expo-haptics";
 import { useFonts } from "expo-font";
@@ -9,9 +10,9 @@ import * as NavigationBar from "expo-navigation-bar";
 import { setStatusBarHidden } from "expo-status-bar";
 import * as SplashScreen from "expo-splash-screen";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { GradientBorderView } from "../../components/Gradient/GradientBorderView";
-import Button from "../../components/Button/Button";
 import { styles } from "./styles";
+import { MEMORY_VALUES, TIMER, DICE } from "../../constants";
+import { PlayerRow, MemoryGrid, Timer, CenterButton } from "./components";
 
 NavigationBar.setPositionAsync("relative");
 NavigationBar.setVisibilityAsync("hidden");
@@ -22,6 +23,14 @@ const diceAudio = new Audio.Sound();
 const tapAudio = new Audio.Sound();
 const startEndAudio = new Audio.Sound();
 
+/**
+ * Main game screen component for the Digimon Card Game memory counter
+ * @param {Object} props - Component props
+ * @param {Object} props.navigation - React Navigation object
+ * @param {Object} props.settings - Game settings from Redux store
+ * @param {Function} props.updateBackgroundImage - Function to update background image
+ * @param {Function} props.updateForegroundImage - Function to update foreground image
+ */
 const Main = (props) => {
     const { navigation, settings, updateBackgroundImage, updateForegroundImage } = props;
 
@@ -50,7 +59,7 @@ const Main = (props) => {
 
     const countDownFromFiveMinutes = () => {
         clearInterval(intervalRef.current);
-        setElapsedTime(300); // 5 minutes in seconds (5 * 60)
+        setElapsedTime(TIMER.COUNTDOWN_DURATION);
         setTimerStarted(true);
 
         intervalRef.current = setInterval(() => {
@@ -60,13 +69,7 @@ const Main = (props) => {
                 if (nextValue == 0) playStartEndSound();
                 return nextValue;
             });
-        }, 1000);
-    };
-
-    const formatTime = (time) => {
-        const minutes = Math.floor(time / 60);
-        const seconds = time % 60;
-        return `${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
+        }, TIMER.UPDATE_INTERVAL);
     };
 
     const resetStopwatch = () => {
@@ -74,8 +77,8 @@ const Main = (props) => {
         setElapsedTime(0);
     };
 
-    const firstRow = [1, 2, 3, 4, 5];
-    const secondRow = [6, 7, 8, 9, 10];
+    const firstRow = MEMORY_VALUES.FIRST_ROW;
+    const secondRow = MEMORY_VALUES.SECOND_ROW;
 
     const image = {
         uri: Asset.fromModule(require("../../assets/images/justBackground.png")).uri,
@@ -219,9 +222,7 @@ const Main = (props) => {
 
     const handleDicePress = (player) => {
         if (settings.isSoundOn) playDiceSound();
-        const min = 1;
-        const max = 20;
-        const randomNumber = Math.floor(Math.random() * (max - min + 1)) + min;
+        const randomNumber = Math.floor(Math.random() * (DICE.MAX - DICE.MIN + 1)) + DICE.MIN;
         if (player == "player1") {
             setPlayer1Die(randomNumber);
         } else {
@@ -247,150 +248,46 @@ const Main = (props) => {
                 style={styles.image}
                 source={settings.keepHUD ? settings.foregroundImage : null}>
                 <SafeAreaView>
+                    {/* Main Game Area */}
                     <View style={styles.landscape}>
-                        <View style={{ ...styles.playerRow, transform: [{ rotate: "180deg" }] }}>
-                            <View
-                                style={{
-                                    flexDirection: "row",
-                                    justifyContent: "space-between",
-                                    width: "40%",
-                                    padding: 20,
-                                }}>
-                                <Text style={styles.textBold}>
-                                    {settings.player2Name}
-                                    {currentTurn === "player2" && ` - Turn ${turnCounter} <`}
-                                </Text>
-                            </View>
-                            <View
-                                style={{
-                                    width: "60%",
-                                    flexDirection: "row",
-                                    alignItems: "center",
-                                    justifyContent: "space-between",
-                                    paddingRight: 20,
-                                }}>
-                                <Text
-                                    style={
-                                        !isPlayerOne || indexPressed === -1
-                                            ? styles.textBold
-                                            : styles.text
-                                    }>
-                                    Memory {playerTwoMemory}
-                                </Text>
-                                {player2Die && currentTurn == null && (
-                                    <Text style={styles.textBold}>Rolled {player2Die}!</Text>
-                                )}
-                                <View style={{ flexDirection: "row", gap: 15 }}>
-                                    {player2Die != null &&
-                                        player1Die != null &&
-                                        player2Die > player1Die &&
-                                        turnCounter == null && (
-                                            <Button
-                                                label="START TURN"
-                                                onPress={() => handleStart("player2")}
-                                            />
-                                        )}
-                                    {currentTurn == "player2" && (
-                                        <Button
-                                            label="END TURN"
-                                            onPress={() => handleEndTurn("player2")}
-                                        />
-                                    )}
-                                    {turnCounter == null ? (
-                                        <Button
-                                            label="⚂"
-                                            onPress={() => handleDicePress("player2")}
-                                        />
-                                    ) : (
-                                        <Button label="↻" onPress={() => resetGameState()} />
-                                    )}
-                                </View>
-                            </View>
-                        </View>
+                        {/* Player 2 Row (rotated) */}
+                        <PlayerRow
+                            playerName={settings.player2Name}
+                            memory={playerTwoMemory}
+                            dieRoll={player2Die}
+                            opponentDieRoll={player1Die}
+                            currentTurn={currentTurn}
+                            turnCounter={turnCounter}
+                            playerId="player2"
+                            isPlayerOne={false}
+                            indexPressed={indexPressed}
+                            rotated={true}
+                            onStartTurn={handleStart}
+                            onEndTurn={handleEndTurn}
+                            onDicePress={handleDicePress}
+                            onReset={resetGameState}
+                        />
+
                         <View style={styles.mainRow}>
-                            <View style={styles.side}>
-                                <View style={styles.reverseRow}>
-                                    {firstRow.map((number, index) => (
-                                        <Pressable
-                                            key={number}
-                                            style={{
-                                                ...styles.cell,
-                                                backgroundColor:
-                                                    indexPressed === index && isPlayerOne
-                                                        ? `${settings.selectedColor}`
-                                                        : undefined,
-                                            }}
-                                            onPress={() => handlePress(index, true)}>
-                                            <GradientBorderView
-                                                gradientProps={{
-                                                    colors:
-                                                        indexPressed === index && isPlayerOne
-                                                            ? [
-                                                                  settings.selectedColor,
-                                                                  settings.selectedColor,
-                                                              ]
-                                                            : [
-                                                                  settings.player1Color,
-                                                                  settings.player1Color,
-                                                              ],
-                                                }}
-                                                style={{
-                                                    borderWidth: 5,
-                                                    borderRadius: 50,
-                                                    width: "100%",
-                                                    height: "100%",
-                                                    justifyContent: "center",
-                                                    alignItems: "center",
-                                                }}>
-                                                <Text style={styles.textBold}>{number}</Text>
-                                            </GradientBorderView>
-                                        </Pressable>
-                                    ))}
-                                </View>
-                                <View style={styles.row}>
-                                    {secondRow.map((number, index) => (
-                                        <Pressable
-                                            key={number}
-                                            style={{
-                                                ...styles.cell,
-                                                backgroundColor:
-                                                    indexPressed === index + 5 && isPlayerOne
-                                                        ? `${settings.selectedColor}`
-                                                        : undefined,
-                                            }}
-                                            onPress={() => handlePress(index + 5, true)}>
-                                            <GradientBorderView
-                                                gradientProps={{
-                                                    colors:
-                                                        indexPressed === index + 5 && isPlayerOne
-                                                            ? [
-                                                                  settings.selectedColor,
-                                                                  settings.selectedColor,
-                                                              ]
-                                                            : [
-                                                                  settings.player1Color,
-                                                                  settings.player1Color,
-                                                              ],
-                                                }}
-                                                style={{
-                                                    borderWidth: 5,
-                                                    borderRadius: 50,
-                                                    width: "100%",
-                                                    height: "100%",
-                                                    justifyContent: "center",
-                                                    alignItems: "center",
-                                                }}>
-                                                <Text style={styles.textBold}>{number}</Text>
-                                            </GradientBorderView>
-                                        </Pressable>
-                                    ))}
-                                </View>
-                            </View>
+                            {/* Player 1 Memory Grid */}
+                            <MemoryGrid
+                                firstRow={firstRow}
+                                secondRow={secondRow}
+                                indexPressed={indexPressed}
+                                isPlayerOne={true}
+                                playerColor={settings.player1Color}
+                                selectedColor={settings.selectedColor}
+                                onPress={handlePress}
+                                rotateNumbers={false}
+                            />
+
+                            {/* Center Area with Timer and 0 Button */}
                             <View
                                 style={{
                                     justifyContent: "center",
                                     alignItems: "center",
                                 }}>
+                                {/* Player 2 Timer (rotated) */}
                                 <View
                                     style={{
                                         flexDirection: "row",
@@ -400,62 +297,28 @@ const Main = (props) => {
                                         transform: [{ rotate: "180deg" }],
                                     }}>
                                     {timerStarted && (
-                                        <Pressable
-                                            style={{
-                                                backgroundColor:
-                                                    currentTurn == "player2"
-                                                        ? settings.player2Color
-                                                        : undefined,
-                                                padding: 5,
-                                                borderRadius: 5,
-                                            }}
-                                            onLongPress={() => startFinalCount()}>
-                                            <Text style={styles.timeText}>
-                                                {formatTime(elapsedTime)}
-                                            </Text>
-                                        </Pressable>
+                                        <Timer
+                                            elapsedTime={elapsedTime}
+                                            currentTurn={currentTurn}
+                                            player1Color={settings.player1Color}
+                                            player2Color={settings.player2Color}
+                                            rotated={false}
+                                            onLongPress={startFinalCount}
+                                        />
                                     )}
                                 </View>
-                                <Pressable
-                                    style={{
-                                        width: 70,
-                                        height: "50%",
-                                        borderRadius: 50,
-                                        backgroundColor:
-                                            indexPressed === -1
-                                                ? `${settings.selectedColor}`
-                                                : undefined,
-                                    }}
+
+                                {/* Center 0 Button */}
+                                <CenterButton
+                                    indexPressed={indexPressed}
+                                    selectedColor={settings.selectedColor}
+                                    player1Color={settings.player1Color}
+                                    player2Color={settings.player2Color}
                                     onPress={() => handlePress(-1, false)}
-                                    onLongPress={() => {
-                                        resetGameState();
-                                    }}>
-                                    <GradientBorderView
-                                        gradientProps={{
-                                            colors:
-                                                indexPressed == -1
-                                                    ? [
-                                                          `${settings.selectedColor}`,
-                                                          `${settings.selectedColor}`,
-                                                      ]
-                                                    : [
-                                                          `${settings.player1Color}99`,
-                                                          `${settings.player2Color}99`,
-                                                      ],
-                                            start: { x: 0, y: 0.5 },
-                                            end: { x: 1, y: 0.6 },
-                                        }}
-                                        style={{
-                                            width: "100%",
-                                            height: "100%",
-                                            justifyContent: "center",
-                                            alignItems: "center",
-                                            borderRadius: 50,
-                                            borderWidth: 5,
-                                        }}>
-                                        <Text style={styles.textBold}>0</Text>
-                                    </GradientBorderView>
-                                </Pressable>
+                                    onLongPress={resetGameState}
+                                />
+
+                                {/* Player 1 Timer */}
                                 <View
                                     style={{
                                         flexDirection: "row",
@@ -464,179 +327,73 @@ const Main = (props) => {
                                         height: 40,
                                     }}>
                                     {timerStarted && (
-                                        <Pressable
-                                            style={{
-                                                backgroundColor:
-                                                    currentTurn == "player1"
-                                                        ? settings.player1Color
-                                                        : undefined,
-                                                padding: 5,
-                                                borderRadius: 5,
-                                            }}
-                                            onLongPress={() => startFinalCount()}>
-                                            <Text style={styles.timeText}>
-                                                {formatTime(elapsedTime)}
-                                            </Text>
-                                        </Pressable>
-                                    )}
-                                </View>
-                            </View>
-                            <View style={styles.side}>
-                                <View style={styles.reverseRow}>
-                                    {secondRow.map((number, index) => (
-                                        <Pressable
-                                            key={number}
-                                            style={{
-                                                ...styles.cell,
-                                                backgroundColor:
-                                                    indexPressed === index + 5 && !isPlayerOne
-                                                        ? `${settings.selectedColor}`
-                                                        : undefined,
-                                            }}
-                                            onPress={() => handlePress(index + 5, false)}>
-                                            <GradientBorderView
-                                                gradientProps={{
-                                                    colors:
-                                                        indexPressed === index + 5 && !isPlayerOne
-                                                            ? [
-                                                                  settings.selectedColor,
-                                                                  settings.selectedColor,
-                                                              ]
-                                                            : [
-                                                                  settings.player2Color,
-                                                                  settings.player2Color,
-                                                              ],
-                                                }}
-                                                style={{
-                                                    borderWidth: 5,
-                                                    borderRadius: 50,
-                                                    width: "100%",
-                                                    height: "100%",
-                                                    justifyContent: "center",
-                                                    alignItems: "center",
-                                                }}>
-                                                <Text
-                                                    style={{
-                                                        ...styles.textBold,
-                                                        transform: [{ rotate: "180deg" }],
-                                                    }}>
-                                                    {number}
-                                                </Text>
-                                            </GradientBorderView>
-                                        </Pressable>
-                                    ))}
-                                </View>
-                                <View style={styles.row}>
-                                    {firstRow.map((number, index) => (
-                                        <Pressable
-                                            key={number}
-                                            style={{
-                                                ...styles.cell,
-                                                backgroundColor:
-                                                    indexPressed === index && !isPlayerOne
-                                                        ? `${settings.selectedColor}`
-                                                        : undefined,
-                                            }}
-                                            onPress={() => handlePress(index, false)}>
-                                            <GradientBorderView
-                                                gradientProps={{
-                                                    colors:
-                                                        indexPressed === index && !isPlayerOne
-                                                            ? [
-                                                                  settings.selectedColor,
-                                                                  settings.selectedColor,
-                                                              ]
-                                                            : [
-                                                                  settings.player2Color,
-                                                                  settings.player2Color,
-                                                              ],
-                                                }}
-                                                style={{
-                                                    borderWidth: 5,
-                                                    borderRadius: 50,
-                                                    width: "100%",
-                                                    height: "100%",
-                                                    justifyContent: "center",
-                                                    alignItems: "center",
-                                                }}>
-                                                <Text
-                                                    style={{
-                                                        ...styles.textBold,
-                                                        transform: [{ rotate: "180deg" }],
-                                                    }}>
-                                                    {number}
-                                                </Text>
-                                            </GradientBorderView>
-                                        </Pressable>
-                                    ))}
-                                </View>
-                            </View>
-                        </View>
-                        <View style={{ ...styles.playerRow }}>
-                            <View
-                                style={{
-                                    flexDirection: "row",
-                                    justifyContent: "space-between",
-                                    width: "40%",
-                                    padding: 20,
-                                }}>
-                                <Text style={styles.textBold}>
-                                    {settings.player1Name}
-                                    {currentTurn === "player1" && ` - Turn ${turnCounter} <`}
-                                </Text>
-                            </View>
-                            <View
-                                style={{
-                                    width: "60%",
-                                    flexDirection: "row",
-                                    alignItems: "center",
-                                    justifyContent: "space-between",
-                                    paddingRight: 20,
-                                }}>
-                                <Text
-                                    style={
-                                        isPlayerOne || indexPressed === -1
-                                            ? styles.textBold
-                                            : styles.text
-                                    }>
-                                    Memory {playerOneMemory}
-                                </Text>
-                                {player1Die && (
-                                    <Text style={styles.textBold}>Rolled {player1Die}!</Text>
-                                )}
-                                <View style={{ flexDirection: "row", gap: 15 }}>
-                                    {player2Die != null &&
-                                        player1Die != null &&
-                                        player1Die > player2Die &&
-                                        turnCounter == null && (
-                                            <Button
-                                                label="START TURN"
-                                                onPress={() => handleStart("player1")}
-                                            />
-                                        )}
-                                    {currentTurn == "player1" && (
-                                        <Button
-                                            label="END TURN"
-                                            onPress={() => handleEndTurn("player1")}
+                                        <Timer
+                                            elapsedTime={elapsedTime}
+                                            currentTurn={currentTurn}
+                                            player1Color={settings.player1Color}
+                                            player2Color={settings.player2Color}
+                                            rotated={false}
+                                            onLongPress={startFinalCount}
                                         />
                                     )}
-                                    {turnCounter == null ? (
-                                        <Button
-                                            label="⚂"
-                                            onPress={() => handleDicePress("player1")}
-                                        />
-                                    ) : (
-                                        <Button label="↻" onPress={resetGameState} />
-                                    )}
-                                    <Button label="..." onPress={onSettingsClick} />
                                 </View>
                             </View>
+
+                            {/* Player 2 Memory Grid */}
+                            <MemoryGrid
+                                firstRow={secondRow}
+                                secondRow={firstRow}
+                                indexPressed={indexPressed}
+                                isPlayerOne={false}
+                                playerColor={settings.player2Color}
+                                selectedColor={settings.selectedColor}
+                                onPress={handlePress}
+                                rotateNumbers={true}
+                            />
                         </View>
+
+                        {/* Player 1 Row */}
+                        <PlayerRow
+                            playerName={settings.player1Name}
+                            playerColor={settings.player1Color}
+                            memory={playerOneMemory}
+                            dieRoll={player1Die}
+                            opponentDieRoll={player2Die}
+                            currentTurn={currentTurn}
+                            turnCounter={turnCounter}
+                            playerId="player1"
+                            isPlayerOne={true}
+                            indexPressed={indexPressed}
+                            rotated={false}
+                            onStartTurn={handleStart}
+                            onEndTurn={handleEndTurn}
+                            onDicePress={handleDicePress}
+                            onReset={resetGameState}
+                            onSettingsClick={onSettingsClick}
+                        />
                     </View>
                 </SafeAreaView>
             </ImageBackground>
         </ImageBackground>
     );
+};
+
+Main.propTypes = {
+    navigation: PropTypes.object.isRequired,
+    settings: PropTypes.shape({
+        player1Name: PropTypes.string,
+        player2Name: PropTypes.string,
+        player1Color: PropTypes.string,
+        player2Color: PropTypes.string,
+        selectedColor: PropTypes.string,
+        backgroundImage: PropTypes.object,
+        foregroundImage: PropTypes.object,
+        keepHUD: PropTypes.bool,
+        isHapticsOn: PropTypes.bool,
+        isSoundOn: PropTypes.bool,
+    }).isRequired,
+    updateBackgroundImage: PropTypes.func.isRequired,
+    updateForegroundImage: PropTypes.func.isRequired,
 };
 
 export default Main;

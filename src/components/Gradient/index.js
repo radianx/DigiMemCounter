@@ -1,7 +1,2 @@
-import {
-  GradientBorderView,
-  GradientBorderViewStyle,
-} from './GradientBorderView';
-import {GradientProps} from './GradientBorder';
-
-export {GradientBorderView};
+export { GradientBorderView } from "./GradientBorderView";
+export { GradientBorder } from "./GradientBorder";

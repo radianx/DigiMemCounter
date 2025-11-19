@@ -1,4 +1,5 @@
 /* eslint-disable indent */
+import PropTypes from "prop-types";
 import React, { useRef, useState } from "react";
 import {
     Text,
@@ -13,6 +14,23 @@ import ColorPicker from "react-native-wheel-color-picker";
 import Button from "../../components/Button/Button";
 import * as ImagePicker from "expo-image-picker";
 import Checkbox from "expo-checkbox";
+
+/**
+ * Settings screen component for customizing app preferences
+ * @param {Object} props - Component props
+ * @param {Function} props.resetImage - Function to reset background image
+ * @param {Function} props.resetSettings - Function to reset all settings
+ * @param {Object} props.settings - Current settings object
+ * @param {Function} props.toggleHaptics - Function to toggle haptic feedback
+ * @param {Function} props.toggleHud - Function to toggle HUD visibility
+ * @param {Function} props.toggleSound - Function to toggle sound effects
+ * @param {Function} props.updateBackgroundImage - Function to update background image
+ * @param {Function} props.updatePlayer1Color - Function to update player 1 color
+ * @param {Function} props.updatePlayer1Name - Function to update player 1 name
+ * @param {Function} props.updatePlayer2Color - Function to update player 2 color
+ * @param {Function} props.updatePlayer2Name - Function to update player 2 name
+ * @param {Function} props.updateSelectedColor - Function to update selection color
+ */
 
 export const styles = StyleSheet.create({
     text: {
@@ -237,6 +255,32 @@ const Settings = (props) => {
             )}
         </View>
     );
+};
+
+Settings.propTypes = {
+    resetImage: PropTypes.func.isRequired,
+    resetSettings: PropTypes.func.isRequired,
+    settings: PropTypes.shape({
+        player1Name: PropTypes.string,
+        player2Name: PropTypes.string,
+        player1Color: PropTypes.string,
+        player2Color: PropTypes.string,
+        selectedColor: PropTypes.string,
+        backgroundImage: PropTypes.object,
+        foregroundImage: PropTypes.object,
+        keepHUD: PropTypes.bool,
+        isHapticsOn: PropTypes.bool,
+        isSoundOn: PropTypes.bool,
+    }).isRequired,
+    toggleHaptics: PropTypes.func.isRequired,
+    toggleHud: PropTypes.func.isRequired,
+    toggleSound: PropTypes.func.isRequired,
+    updateBackgroundImage: PropTypes.func.isRequired,
+    updatePlayer1Color: PropTypes.func.isRequired,
+    updatePlayer1Name: PropTypes.func.isRequired,
+    updatePlayer2Color: PropTypes.func.isRequired,
+    updatePlayer2Name: PropTypes.func.isRequired,
+    updateSelectedColor: PropTypes.func.isRequired,
 };
 
 export default Settings;

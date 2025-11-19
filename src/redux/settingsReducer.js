@@ -28,44 +28,44 @@ const initialState = {
 
 const settingsReducer = (state = initialState, action) => {
     switch (action.type) {
-        case UPDATE_PLAYER_1_COLOR: {
-            return { ...state, player1Color: action.payload };
-        }
-        case UPDATE_PLAYER_2_COLOR: {
-            return { ...state, player2Color: action.payload };
-        }
-        case UPDATE_PLAYER_1_NAME: {
-            return { ...state, player1Name: action.payload };
-        }
-        case UPDATE_PLAYER_2_NAME: {
-            return { ...state, player2Name: action.payload };
-        }
-        case UPDATE_SELECTED_COLOR: {
-            return { ...state, selectedColor: action.payload };
-        }
-        case UPDATE_BACKGROUND_IMAGE: {
-            return { ...state, backgroundImage: action.payload };
-        }
-        case UPDATE_FOREGROUND_IMAGE: {
-            return { ...state, foregroundImage: action.payload };
-        }
-        case TOGGLE_HUD: {
-            return { ...state, keepHUD: action.payload };
-        }
-        case TOGGLE_HAPTIC_FEEDBACK: {
-            return { ...state, isHapticsOn: action.payload };
-        }
-        case TOGGLE_SOUND: {
-            return { ...state, isSoundOn: action.payload };
-        }
-        case RESET_BACKGROUND_IMAGE: {
-            return { ...state, backgroundImage: initialState.backgroundImage, keepHUD: true };
-        }
-        case RESET_ALL_SETTINGS: {
-            return { ...initialState };
-        }
-        default:
-            return state;
+    case UPDATE_PLAYER_1_COLOR: {
+        return { ...state, player1Color: action.payload };
+    }
+    case UPDATE_PLAYER_2_COLOR: {
+        return { ...state, player2Color: action.payload };
+    }
+    case UPDATE_PLAYER_1_NAME: {
+        return { ...state, player1Name: action.payload };
+    }
+    case UPDATE_PLAYER_2_NAME: {
+        return { ...state, player2Name: action.payload };
+    }
+    case UPDATE_SELECTED_COLOR: {
+        return { ...state, selectedColor: action.payload };
+    }
+    case UPDATE_BACKGROUND_IMAGE: {
+        return { ...state, backgroundImage: action.payload };
+    }
+    case UPDATE_FOREGROUND_IMAGE: {
+        return { ...state, foregroundImage: action.payload };
+    }
+    case TOGGLE_HUD: {
+        return { ...state, keepHUD: action.payload };
+    }
+    case TOGGLE_HAPTIC_FEEDBACK: {
+        return { ...state, isHapticsOn: action.payload };
+    }
+    case TOGGLE_SOUND: {
+        return { ...state, isSoundOn: action.payload };
+    }
+    case RESET_BACKGROUND_IMAGE: {
+        return { ...state, backgroundImage: initialState.backgroundImage, keepHUD: true };
+    }
+    case RESET_ALL_SETTINGS: {
+        return { ...initialState };
+    }
+    default:
+        return state;
     }
 };
 

@@ -3,8 +3,9 @@
 A memory counter app designed for the **Digimon Card Game** (TCG), built with React Native and Expo. Track memory values, manage turns, roll dice, and customize your gaming experience with a sleek landscape interface.
 
 ![Version](https://img.shields.io/badge/version-1.0.0-blue)
-![Expo SDK](https://img.shields.io/badge/Expo-SDK%2050-000020?logo=expo)
-![React Native](https://img.shields.io/badge/React%20Native-0.73.6-61DAFB?logo=react)
+![Expo SDK](https://img.shields.io/badge/Expo-SDK%2054-000020?logo=expo)
+![React Native](https://img.shields.io/badge/React%20Native-0.81.5-61DAFB?logo=react)
+![React](https://img.shields.io/badge/React-19.1.0-61DAFB?logo=react)
 
 ## 📱 Features
 
@@ -132,11 +133,12 @@ Access the settings menu by pressing the "..." button in the bottom-right corner
 
 ## 🏗️ Tech Stack
 
-- **React Native** 0.73.6
-- **Expo** SDK 50
-- **Redux Toolkit** for state management
-- **Redux Persist** for persistent storage
-- **React Navigation** for screen navigation
+- **React** 19.1.0
+- **React Native** 0.81.5
+- **Expo** SDK 54
+- **Redux Toolkit** 2.10.1 for state management
+- **Redux Persist** with AsyncStorage for persistent storage
+- **React Navigation** 7.x for screen navigation
 - **Expo AV** for audio playback
 - **Expo Haptics** for tactile feedback
 - **Expo Image Picker** for custom backgrounds
@@ -168,7 +170,9 @@ This has the WTFPL license.
 
 ## 🤝 Contributing
 
-This is a personal project. Feel free to fork and customize for your own use!
+Contributions are welcome! Please read [CONTRIBUTING.md](CONTRIBUTING.md) for details on our code of conduct and the process for submitting pull requests.
+
+For major changes, please open an issue first to discuss what you would like to change.
 
 ---
 

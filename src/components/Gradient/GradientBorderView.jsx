@@ -1,3 +1,4 @@
+import PropTypes from "prop-types";
 import React from "react";
 import { StyleSheet, View } from "react-native";
 import GradientBorder from "./GradientBorder";
@@ -76,4 +77,10 @@ export const GradientBorderView = ({ gradientProps, ...props }) => {
             />
         </View>
     );
+};
+
+GradientBorderView.propTypes = {
+    gradientProps: PropTypes.object,
+    style: PropTypes.object,
+    children: PropTypes.node,
 };
